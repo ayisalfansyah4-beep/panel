@@ -71,7 +71,9 @@ export default function DetailPenduduk() {
           <h2 className="font-bold text-slate-900 text-lg">{data.NAMA}</h2>
           <p className="text-sm text-slate-500 font-mono mt-1">{data.NIK}</p>
           <div className="flex gap-2 mt-3">
-            <span className={`badge-${data.JK === 'L' ? 'active' : 'inactive'} !rounded-full`}>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              data.JK === 'L' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'
+            }`}>
               {data.JK === 'L' ? 'Laki-laki' : 'Perempuan'}
             </span>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">

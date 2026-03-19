@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL || '',
   timeout: 30000,
 });
 
@@ -25,9 +25,11 @@ api.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
       if (status === 401) {
+        // Bersihkan storage lalu emit event — AuthContext yang akan handle redirect
+        // sehingga React Router tetap mengontrol navigasi
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.dispatchEvent(new Event('auth:logout'));
         toast.error('Sesi habis. Silakan login kembali.');
       } else if (status === 403) {
         toast.error('Akses ditolak.');

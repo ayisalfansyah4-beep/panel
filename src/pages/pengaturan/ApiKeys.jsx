@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Key, Plus, Trash2, ToggleLeft, ToggleRight, Copy, Eye, EyeOff } from 'lucide-react';
 import adminService from '../../services/adminService';
 import { PageHeader, ConfirmDialog, Modal, Spinner, EmptyState } from '../../components/UI';
@@ -15,7 +15,7 @@ export default function ApiKeys() {
   const [form, setForm] = useState({ nama_app: '', scopes: '', rate_limit: '' });
   const [formLoading, setFormLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await adminService.getApiKeys();
@@ -26,9 +26,9 @@ export default function ApiKeys() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

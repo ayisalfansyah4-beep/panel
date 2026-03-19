@@ -44,8 +44,16 @@ export default function DaftarPenduduk() {
     }
   }, [search, filter]);
 
-  useEffect(() => { fetchData(page); }, [page]);
-  useEffect(() => { setPage(1); fetchData(1); }, [filter]);
+  // Saat user navigasi halaman (klik pagination)
+  useEffect(() => {
+    fetchData(page);
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Saat search atau filter berubah: fetchData berubah referensi → reset ke halaman 1
+  useEffect(() => {
+    setPage(1);
+    fetchData(1);
+  }, [fetchData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = (e) => {
     e.preventDefault();

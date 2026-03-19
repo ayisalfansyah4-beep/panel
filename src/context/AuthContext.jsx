@@ -1,22 +1,24 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+  const [user, setUser]   = useState(() => {
+    try { return JSON.parse(localStorage.getItem('user')); } catch { return null; }
   });
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const login = async (username, password) => {
     setLoading(true);
     try {
       const res = await authService.login(username, password);
-      const jwt = res.data?.token || res.token;
-      const userData = res.data?.user || res.user;
+      const jwt      = res.data?.token  || res.token;
+      const userData = res.data?.user   || res.user;
       if (jwt) {
         localStorage.setItem('token', jwt);
         localStorage.setItem('user', JSON.stringify(userData || { username }));
@@ -33,12 +35,11 @@ export function AuthProvider({ children }) {
     authService.logout();
     setToken(null);
     setUser(null);
-  }, []);
-
-  const isAuthenticated = !!token;
+    navigate('/login', { replace: true });
+  }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Hash, RotateCcw } from 'lucide-react';
 import adminService from '../../services/adminService';
 import { PageHeader, ConfirmDialog, EmptyState, Spinner } from '../../components/UI';
@@ -10,7 +10,7 @@ export default function NomorSurat() {
   const [resetTarget, setResetTarget] = useState(null);
   const [resetLoading, setResetLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await adminService.getNomorSurat();
@@ -21,9 +21,9 @@ export default function NomorSurat() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleReset = async () => {
     setResetLoading(true);

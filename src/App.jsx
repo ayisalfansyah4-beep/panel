@@ -22,6 +22,14 @@ import ApiKeys from './pages/pengaturan/ApiKeys';
 import ApiLogs from './pages/pengaturan/ApiLogs';
 import NomorSurat from './pages/pengaturan/NomorSurat';
 
+// Bot pages
+import BotDashboard from './pages/bot/BotDashboard';
+import BotMessages  from './pages/bot/BotMessages';
+import BotContacts  from './pages/bot/BotContacts';
+import BotMenu      from './pages/bot/BotMenu';
+import BotBroadcast from './pages/bot/BotBroadcast';
+import BotSettings  from './pages/bot/BotSettings';
+
 function PrivateRoute({ children }) {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -50,6 +58,15 @@ function AppRoutes() {
         <Route path="pengaturan/api-keys" element={<ApiKeys />} />
         <Route path="pengaturan/api-logs" element={<ApiLogs />} />
         <Route path="pengaturan/nomor-surat" element={<NomorSurat />} />
+
+        {/* ── WhatsApp Bot ── */}
+        <Route path="bot"               element={<BotDashboard />} />
+        <Route path="bot/messages"      element={<BotMessages />} />
+        <Route path="bot/contacts"      element={<BotContacts />} />
+        <Route path="bot/menu"          element={<BotMenu />} />
+        <Route path="bot/broadcast"     element={<BotBroadcast />} />
+        <Route path="bot/settings"      element={<BotSettings />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
@@ -58,8 +75,8 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <AppRoutes />
         <ToastContainer
           position="top-right"
@@ -71,7 +88,7 @@ export default function App() {
           theme="light"
           toastClassName="!font-sans !text-sm"
         />
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

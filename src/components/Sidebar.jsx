@@ -2,7 +2,9 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FilePlus, FileText, Clock,
   Printer, Key, BarChart3, Hash, LogOut, ChevronDown,
-  ChevronRight, Building2
+  ChevronRight, Building2,
+  // Bot icons
+  Bot, MessageSquare, BookOpen, Megaphone, Settings2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -53,7 +55,7 @@ export default function Sidebar() {
             <Building2 className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm leading-tight">SiPenduk Admin</p>
+            <p className="font-bold text-white text-sm leading-tight">Oromid Smart Village Admin</p>
             <p className="text-xs text-slate-400">Desa Sudimoro</p>
           </div>
         </div>
@@ -100,6 +102,19 @@ export default function Sidebar() {
           { to: '/pengaturan/api-logs', icon: BarChart3, label: 'Log API' },
           { to: '/pengaturan/nomor-surat', icon: Hash, label: 'Nomor Surat' },
         ]} />
+
+        <div className="pt-3 pb-1 px-1">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">WhatsApp Bot</p>
+        </div>
+
+        <NavItem to="/bot" end icon={Bot} label="Dashboard Bot" />
+        <NavGroup icon={MessageSquare} label="Pesan & Kontak" children={[
+          { to: '/bot/messages', icon: MessageSquare, label: 'Log Pesan' },
+          { to: '/bot/contacts', icon: Users, label: 'Kontak' },
+        ]} />
+        <NavItem to="/bot/menu"      icon={BookOpen}    label="Menu Bot" />
+        <NavItem to="/bot/broadcast" icon={Megaphone}   label="Broadcast" />
+        <NavItem to="/bot/settings"  icon={Settings2}   label="Pengaturan Bot" />
       </nav>
 
       {/* User Footer */}

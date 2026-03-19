@@ -31,10 +31,16 @@ export default function GenerateSurat() {
   const [extraForm, setExtraForm] = useState({});
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
-
-  // SKTM has parent-child structure
+  // SKTM — semua state harus dideklarasikan sebelum useEffect yang menggunakannya
   const [anakList, setAnakList] = useState([{ nama: '', usia: '' }]);
   const [showAnak, setShowAnak] = useState(false);
+
+  // Reset extra form & data anak saat jenis surat berganti
+  useEffect(() => {
+    setExtraForm({});
+    setAnakList([{ nama: '', usia: '' }]);
+    setShowAnak(false);
+  }, [selectedKode]);
 
   useEffect(() => {
     const load = async () => {
