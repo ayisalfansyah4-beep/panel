@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+=======
+import { createContext, useContext, useState, useCallback } from 'react';
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 
@@ -13,6 +17,7 @@ export function AuthProvider({ children }) {
 
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   const logout = useCallback(() => {
     authService.logout();
     setToken(null);
@@ -28,10 +33,13 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:logout', handler);
   }, [logout]);
 
+=======
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
   const login = async (username, password) => {
     setLoading(true);
     try {
       const res = await authService.login(username, password);
+<<<<<<< HEAD
 
       // FIX 2: Backend return { status, data: { token, username, name, role } }
       // Sebelumnya: res.data?.user → selalu undefined karena key-nya bukan "user"
@@ -45,6 +53,15 @@ export function AuthProvider({ children }) {
         localStorage.setItem('user', JSON.stringify(userData));
         setToken(jwt);
         setUser(userData);
+=======
+      const jwt      = res.data?.token  || res.token;
+      const userData = res.data?.user   || res.user;
+      if (jwt) {
+        localStorage.setItem('token', jwt);
+        localStorage.setItem('user', JSON.stringify(userData || { username }));
+        setToken(jwt);
+        setUser(userData || { username });
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
       }
       return res;
     } finally {
@@ -52,6 +69,16 @@ export function AuthProvider({ children }) {
     }
   };
 
+<<<<<<< HEAD
+=======
+  const logout = useCallback(() => {
+    authService.logout();
+    setToken(null);
+    setUser(null);
+    navigate('/login', { replace: true });
+  }, [navigate]);
+
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
   return (
     <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated: !!token }}>
       {children}
