@@ -2,7 +2,11 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FilePlus, FileText, Clock,
   Printer, Key, BarChart3, Hash, LogOut, ChevronDown,
+<<<<<<< HEAD
   ChevronRight, Building2, Stamp, History,
+=======
+  ChevronRight, Building2,
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
   // Bot icons
   Bot, MessageSquare, BookOpen, Megaphone, Settings2,
 } from 'lucide-react';
@@ -104,6 +108,7 @@ export default function Sidebar() {
         ]} />
 
         <div className="pt-3 pb-1 px-1">
+<<<<<<< HEAD
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">TTE</p>
         </div>
 
@@ -113,6 +118,8 @@ export default function Sidebar() {
         ]} />
 
         <div className="pt-3 pb-1 px-1">
+=======
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">WhatsApp Bot</p>
         </div>
 
