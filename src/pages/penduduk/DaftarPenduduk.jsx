@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+import { useState, useEffect, useCallback, useRef } from 'react';
+=======
 import { useState, useEffect, useCallback } from 'react';
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Eye, Pencil, Trash2, Filter, X } from 'lucide-react';
 import pendudukService from '../../services/pendudukService';
@@ -44,6 +48,29 @@ export default function DaftarPenduduk() {
     }
   }, [search, filter]);
 
+<<<<<<< HEAD
+  // FIX 4: Tidak ada double fetch
+  // isFilterChange: true  → search/filter berubah → reset ke hal 1
+  // isFilterChange: false → user klik pagination → fetch halaman yang diminta
+  const prevFetchData = useRef(null);
+
+  useEffect(() => {
+    const isFilterChange = prevFetchData.current && prevFetchData.current !== fetchData;
+    prevFetchData.current = fetchData;
+
+    if (isFilterChange) {
+      // Search/filter berubah → selalu mulai dari halaman 1
+      if (page !== 1) {
+        setPage(1); // setPage akan trigger useEffect bawah
+      } else {
+        fetchData(1); // sudah di hal 1, langsung fetch
+      }
+    } else {
+      // Mount pertama atau pagination berubah
+      fetchData(page);
+    }
+  }, [fetchData, page]); // eslint-disable-line react-hooks/exhaustive-deps
+=======
   // Saat user navigasi halaman (klik pagination)
   useEffect(() => {
     fetchData(page);
@@ -54,6 +81,7 @@ export default function DaftarPenduduk() {
     setPage(1);
     fetchData(1);
   }, [fetchData]); // eslint-disable-line react-hooks/exhaustive-deps
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -22,6 +22,13 @@ import ApiKeys from './pages/pengaturan/ApiKeys';
 import ApiLogs from './pages/pengaturan/ApiLogs';
 import NomorSurat from './pages/pengaturan/NomorSurat';
 
+<<<<<<< HEAD
+// TTE pages
+import AntrianTTE from './pages/tte/AntrianTTE';
+import RiwayatTTE from './pages/tte/RiwayatTTE';
+
+=======
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
 // Bot pages
 import BotDashboard from './pages/bot/BotDashboard';
 import BotMessages  from './pages/bot/BotMessages';
@@ -59,6 +66,13 @@ function AppRoutes() {
         <Route path="pengaturan/api-logs" element={<ApiLogs />} />
         <Route path="pengaturan/nomor-surat" element={<NomorSurat />} />
 
+<<<<<<< HEAD
+        {/* ── TTE ── */}
+        <Route path="tte/antrian" element={<AntrianTTE />} />
+        <Route path="tte/riwayat" element={<RiwayatTTE />} />
+
+=======
+>>>>>>> d5aa4670c415cdab5784b897c9b42241aaf74851
         {/* ── WhatsApp Bot ── */}
         <Route path="bot"               element={<BotDashboard />} />
         <Route path="bot/messages"      element={<BotMessages />} />
