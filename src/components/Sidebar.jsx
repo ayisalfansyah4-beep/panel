@@ -129,6 +129,7 @@ export default function Sidebar() {
         <NavItem to="/bot/menu"      icon={BookOpen}  label="Menu Bot" />
         <NavItem to="/bot/broadcast" icon={Megaphone} label="Broadcast" />
         <NavItem to="/bot/settings"  icon={Settings2} label="Pengaturan Bot" />
+        <NavItem to="/bot/admin"     icon={UserCog}  label="Admin Bot" />
       </nav>
 
       {/* User Footer */}

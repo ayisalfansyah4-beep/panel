@@ -38,6 +38,7 @@ import Pengumuman from './pages/pengumuman/Pengumuman';
 import ProfilDesa from './pages/profil/ProfilDesa';
 
 // Bot pages
+import BotAdmin      from './pages/bot/BotAdmin';
 import BotDashboard from './pages/bot/BotDashboard';
 import BotMessages  from './pages/bot/BotMessages';
 import BotContacts  from './pages/bot/BotContacts';
@@ -105,7 +106,7 @@ function AppRoutes() {
         <Route path="bot/menu"      element={<BotMenu />} />
         <Route path="bot/broadcast" element={<BotBroadcast />} />
         <Route path="bot/settings"  element={<BotSettings />} />
-
+        <Route path="bot/admin"     element={<BotAdmin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -31,6 +31,14 @@ const botService = {
   sendBroadcast: (d)   => botApi.post('/broadcasts', d),
   deleteBroadcast: (id)=> botApi.delete(`/broadcasts/${id}`),
 
+
+  // ── Admin Bot (role management) ────────────────────────────
+  getAdmins     : ()       => botApi.get('/admin'),
+  createAdmin   : (d)      => botApi.post('/admin', d),
+  updateAdmin   : (id, d)  => botApi.put(`/admin/${id}`, d),
+  toggleAdmin   : (id)     => botApi.patch(`/admin/${id}/toggle`),
+  deleteAdmin   : (id)     => botApi.delete(`/admin/${id}`),
+  checkAkses    : (p)      => botApi.get('/admin/check', { params: p }),
   // ── Settings ───────────────────────────────────────────
   getSettings: ()      => botApi.get('/settings'),
   updateSettings: (d)  => botApi.put('/settings', d),
