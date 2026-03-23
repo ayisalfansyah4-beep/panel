@@ -2,18 +2,16 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Users, FilePlus, FileText, Clock,
   Printer, Key, BarChart3, Hash, LogOut, ChevronDown,
-  ChevronRight, Building2, Stamp, History,
-  // Bot icons
-  Bot, MessageSquare, BookOpen, Megaphone, Settings2,
+  ChevronRight, Building2, Stamp, History, UserCog,
+  Lock, Bell, Wallet, CalendarDays, MapPin, Settings2,
+  Bot, MessageSquare, BookOpen, Megaphone,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const NavItem = ({ to, icon: Icon, label, end = false }) => (
   <NavLink to={to} end={end}
-    className={({ isActive }) =>
-      `sidebar-link ${isActive ? 'active' : ''}`
-    }>
+    className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
     <Icon className="w-4 h-4 flex-shrink-0" />
     <span>{label}</span>
   </NavLink>
@@ -43,6 +41,12 @@ const NavGroup = ({ icon: Icon, label, children }) => {
   );
 };
 
+const SectionLabel = ({ label }) => (
+  <div className="pt-3 pb-1 px-1">
+    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{label}</p>
+  </div>
+);
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
 
@@ -65,65 +69,66 @@ export default function Sidebar() {
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto sidebar-scroll">
         <NavItem to="/" end icon={LayoutDashboard} label="Dashboard" />
 
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kependudukan</p>
-        </div>
-
+        {/* Kependudukan */}
+        <SectionLabel label="Kependudukan" />
         <NavGroup icon={Users} label="Penduduk" children={[
-          { to: '/penduduk', icon: Users, label: 'Daftar Penduduk' },
+          { to: '/penduduk',        icon: Users,    label: 'Daftar Penduduk' },
           { to: '/penduduk/tambah', icon: FilePlus, label: 'Tambah Penduduk' },
         ]} />
 
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Persuratan</p>
-        </div>
-
+        {/* Persuratan */}
+        <SectionLabel label="Persuratan" />
         <NavGroup icon={FileText} label="Surat" children={[
-          { to: '/surat/jenis', icon: FileText, label: 'Jenis Surat' },
+          { to: '/surat/jenis',    icon: FileText, label: 'Jenis Surat' },
           { to: '/surat/generate', icon: FilePlus, label: 'Generate Surat' },
-          { to: '/surat/riwayat', icon: Clock, label: 'Riwayat Surat' },
+          { to: '/surat/riwayat', icon: Clock,     label: 'Riwayat Surat' },
         ]} />
 
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Anjungan</p>
-        </div>
-
+        {/* Anjungan */}
+        <SectionLabel label="Anjungan" />
         <NavGroup icon={Printer} label="Cetak Dokumen" children={[
           { to: '/cetak/upload', icon: FilePlus, label: 'Upload PDF' },
-          { to: '/cetak/log', icon: Clock, label: 'Log Cetak' },
+          { to: '/cetak/log',    icon: Clock,    label: 'Log Cetak' },
         ]} />
 
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pengaturan</p>
-        </div>
+        {/* Konten Desa */}
+        <SectionLabel label="Konten Desa" />
+        <NavItem to="/apbdes"     icon={Wallet}       label="APBDes" />
+        <NavItem to="/kegiatan"   icon={CalendarDays} label="Kegiatan" />
+        <NavItem to="/pengumuman" icon={Bell}          label="Pengumuman" />
+        <NavItem to="/profil"     icon={MapPin}        label="Profil Desa" />
 
-        <NavGroup icon={Key} label="API & Akses" children={[
-          { to: '/pengaturan/api-keys', icon: Key, label: 'API Keys' },
-          { to: '/pengaturan/api-logs', icon: BarChart3, label: 'Log API' },
-          { to: '/pengaturan/nomor-surat', icon: Hash, label: 'Nomor Surat' },
-        ]} />
-
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">TTE</p>
-        </div>
-
+        {/* TTE */}
+        <SectionLabel label="TTE" />
+        <NavItem to="/tte" icon={Stamp} label="Daftar Dokumen TTE" />
         <NavGroup icon={Stamp} label="Tanda Tangan Elektronik" children={[
-          { to: '/tte/antrian', icon: Stamp,   label: 'Antrian TTE' },
-          { to: '/tte/riwayat', icon: History, label: 'Riwayat TTE' },
+          { to: '/tte/antrian', icon: Clock,    label: 'Antrian TTE' },
+          { to: '/tte/riwayat', icon: History,  label: 'Riwayat TTE' },
+          { to: '/tte/config',  icon: Settings2, label: 'Konfigurasi TTE' },
         ]} />
 
-        <div className="pt-3 pb-1 px-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">WhatsApp Bot</p>
-        </div>
+        {/* Pengaturan */}
+        <SectionLabel label="Pengaturan" />
+        <NavGroup icon={Key} label="API & Akses" children={[
+          { to: '/pengaturan/api-keys',    icon: Key,      label: 'API Keys' },
+          { to: '/pengaturan/api-logs',    icon: BarChart3, label: 'Log API' },
+          { to: '/pengaturan/nomor-surat', icon: Hash,     label: 'Nomor Surat' },
+        ]} />
+        <NavGroup icon={UserCog} label="Admin" children={[
+          { to: '/pengaturan/manajemen-user', icon: UserCog, label: 'Manajemen User' },
+          { to: '/pengaturan/ganti-password', icon: Lock,    label: 'Ganti Password' },
+        ]} />
 
+        {/* WhatsApp Bot */}
+        <SectionLabel label="WhatsApp Bot" />
         <NavItem to="/bot" end icon={Bot} label="Dashboard Bot" />
         <NavGroup icon={MessageSquare} label="Pesan & Kontak" children={[
           { to: '/bot/messages', icon: MessageSquare, label: 'Log Pesan' },
-          { to: '/bot/contacts', icon: Users, label: 'Kontak' },
+          { to: '/bot/contacts', icon: Users,         label: 'Kontak' },
         ]} />
-        <NavItem to="/bot/menu"      icon={BookOpen}    label="Menu Bot" />
-        <NavItem to="/bot/broadcast" icon={Megaphone}   label="Broadcast" />
-        <NavItem to="/bot/settings"  icon={Settings2}   label="Pengaturan Bot" />
+        <NavItem to="/bot/menu"      icon={BookOpen}  label="Menu Bot" />
+        <NavItem to="/bot/broadcast" icon={Megaphone} label="Broadcast" />
+        <NavItem to="/bot/settings"  icon={Settings2} label="Pengaturan Bot" />
       </nav>
 
       {/* User Footer */}
