@@ -7,7 +7,12 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function GantiPassword() {
   const { user, logout } = useAuth();
-  const [form, setForm]       = useState({ old_password: '', new_password: '', confirm: '' });
+
+  // BUG FIX: form keys sebelumnya adalah { old_password, new_password, confirm }
+  // tapi InputPass dipanggil dengan field="old" dan field="new" sehingga
+  // form['old'] dan form['new'] selalu undefined → nilai tidak pernah tersimpan
+  // → request ke backend selalu kirim string kosong → "password lama salah"
+  const [form, setForm]       = useState({ old: '', new: '', confirm: '' });
   const [show, setShow]       = useState({ old: false, new: false, confirm: false });
   const [loading, setLoading] = useState(false);
 
@@ -23,30 +28,32 @@ export default function GantiPassword() {
     if (/[^A-Za-z0-9]/.test(p)) score++;
     const levels = [
       { label: '', color: '' },
-      { label: 'Lemah', color: 'bg-red-400' },
-      { label: 'Cukup', color: 'bg-orange-400' },
-      { label: 'Sedang', color: 'bg-yellow-400' },
-      { label: 'Kuat', color: 'bg-teal-500' },
+      { label: 'Lemah',       color: 'bg-red-400' },
+      { label: 'Cukup',       color: 'bg-orange-400' },
+      { label: 'Sedang',      color: 'bg-yellow-400' },
+      { label: 'Kuat',        color: 'bg-teal-500' },
       { label: 'Sangat Kuat', color: 'bg-green-500' },
     ];
     return { score, ...levels[Math.min(score, 5)] };
   };
 
-  const pw = strength(form.new_password);
+  const pw = strength(form.new);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.new_password !== form.confirm) { toast.error('Konfirmasi password tidak cocok'); return; }
-    if (form.new_password.length < 6) { toast.error('Password baru minimal 6 karakter'); return; }
-    if (form.old_password === form.new_password) { toast.error('Password baru harus berbeda dari password lama'); return; }
+    if (form.new !== form.confirm)  { toast.error('Konfirmasi password tidak cocok'); return; }
+    if (form.new.length < 6)        { toast.error('Password baru minimal 6 karakter'); return; }
+    if (form.old === form.new)      { toast.error('Password baru harus berbeda dari password lama'); return; }
 
     setLoading(true);
     try {
+      // Kirim dengan key yang benar sesuai backend Oromid
       await api.put('/api/admin/users/me/change-password', {
-        old_password: form.old_password,
-        new_password: form.new_password,
+        old_password: form.old,
+        new_password: form.new,
       });
       toast.success('Password berhasil diubah! Silakan login ulang.');
+      setForm({ old: '', new: '', confirm: '' });
       setTimeout(() => logout(), 2000);
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Gagal mengubah password');
@@ -55,6 +62,7 @@ export default function GantiPassword() {
     }
   };
 
+  // Komponen input password reusable
   const InputPass = ({ label, field, placeholder }) => (
     <div>
       <label className="label">{label} <span className="text-red-500">*</span></label>
@@ -62,7 +70,7 @@ export default function GantiPassword() {
         <input
           type={show[field] ? 'text' : 'password'}
           value={form[field]}
-          onChange={e => setForm({...form, [field]: e.target.value})}
+          onChange={e => setForm({ ...form, [field]: e.target.value })}
           className="input-field pr-10"
           placeholder={placeholder}
           required
@@ -99,7 +107,7 @@ export default function GantiPassword() {
               <InputPass label="Password Baru" field="new" placeholder="Minimal 6 karakter" />
 
               {/* Strength indicator */}
-              {form.new_password && (
+              {form.new && (
                 <div className="mt-2">
                   <div className="flex gap-1 mb-1">
                     {[1,2,3,4,5].map(i => (
@@ -116,10 +124,10 @@ export default function GantiPassword() {
 
             <div>
               <InputPass label="Konfirmasi Password Baru" field="confirm" placeholder="Ulangi password baru" />
-              {form.confirm && form.confirm !== form.new_password && (
+              {form.confirm && form.confirm !== form.new && (
                 <p className="text-xs text-red-500 mt-1">Password tidak cocok</p>
               )}
-              {form.confirm && form.confirm === form.new_password && form.confirm.length >= 6 && (
+              {form.confirm && form.confirm === form.new && form.confirm.length >= 6 && (
                 <p className="text-xs text-teal-600 mt-1">✓ Password cocok</p>
               )}
             </div>
@@ -129,9 +137,15 @@ export default function GantiPassword() {
             </div>
 
             <div className="flex justify-end pt-1">
-              <button type="submit" disabled={loading || form.new_password !== form.confirm || !form.new_password}
-                className="btn-primary px-8">
-                {loading ? <><Spinner size="sm" /> Menyimpan...</> : <><Save className="w-4 h-4" /> Simpan Password</>}
+              <button
+                type="submit"
+                disabled={loading || form.new !== form.confirm || !form.new || !form.old}
+                className="btn-primary px-8"
+              >
+                {loading
+                  ? <><Spinner size="sm" /> Menyimpan...</>
+                  : <><Save className="w-4 h-4" /> Simpan Password</>
+                }
               </button>
             </div>
           </form>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Eye, Pencil, Trash2, Filter, X } from 'lucide-react';
 import pendudukService from '../../services/pendudukService';
@@ -13,14 +13,14 @@ const KAWIN_OPTIONS = ['', 'Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
 
 export default function DaftarPenduduk() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [data, setData]         = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [page, setPage]         = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState('');
+  const [total, setTotal]       = useState(0);
+  const [search, setSearch]     = useState('');
   const [showFilter, setShowFilter] = useState(false);
-  const [filter, setFilter] = useState({ rt: '', rw: '', dusun: '', agama: '', jk: '', st_kawin: '' });
+  const [filter, setFilter]     = useState({ rt: '', rw: '', dusun: '', agama: '', jk: '', st_kawin: '' });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -44,27 +44,18 @@ export default function DaftarPenduduk() {
     }
   }, [search, filter]);
 
-  // FIX 4: Tidak ada double fetch
-  // isFilterChange: true  → search/filter berubah → reset ke hal 1
-  // isFilterChange: false → user klik pagination → fetch halaman yang diminta
-  const prevFetchData = useRef(null);
-
+  // FIX: satu useEffect yang jelas — hindari double fetch
+  // fetchData berubah referensi ketika search/filter berubah → reset ke hal 1
   useEffect(() => {
-    const isFilterChange = prevFetchData.current && prevFetchData.current !== fetchData;
-    prevFetchData.current = fetchData;
+    setPage(1);
+    fetchData(1);
+  }, [fetchData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (isFilterChange) {
-      // Search/filter berubah → selalu mulai dari halaman 1
-      if (page !== 1) {
-        setPage(1); // setPage akan trigger useEffect bawah
-      } else {
-        fetchData(1); // sudah di hal 1, langsung fetch
-      }
-    } else {
-      // Mount pertama atau pagination berubah
-      fetchData(page);
-    }
-  }, [fetchData, page]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Saat user klik pagination — fetch halaman yang diminta
+  const handlePageChange = (pg) => {
+    setPage(pg);
+    fetchData(pg);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -211,7 +202,7 @@ export default function DaftarPenduduk() {
         </div>
         {!loading && data.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-100">
-            <Pagination page={page} totalPages={totalPages} onPageChange={p => setPage(p)} />
+            <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         )}
       </div>

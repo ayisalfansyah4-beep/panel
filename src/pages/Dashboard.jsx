@@ -31,7 +31,6 @@ export default function Dashboard() {
   const [statistik, setStatistik] = useState(null);
   const [loading, setLoading]     = useState(true);
 
-  // FIX 3: Hanya satu useEffect, tidak ada double fetch
   useEffect(() => {
     const load = async () => {
       try {
@@ -56,44 +55,49 @@ export default function Dashboard() {
 
   if (loading) return <PageLoading />;
 
-  // FIX 3: Pakai field yang benar sesuai backend:
-  //   per_pkrjaan  (bukan per_pekerjaan)
+  // FIX: Pakai field yang benar sesuai backend Oromid:
+  //   per_agama  → label atau AGAMA
   //   laki_laki / perempuan langsung dari statistik (bukan per_jk array)
+  //   per_pkrjaan (bukan per_pekerjaan)
   const agamaData = statistik?.per_agama ? {
     labels: statistik.per_agama.map(a => a.label || a.AGAMA),
     datasets: [{
-      data: statistik.per_agama.map(a => a.jumlah),
+      data: statistik.per_agama.map(a => a.jumlah || a.count),
       backgroundColor: ['#14B8A6', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#10B981'],
     }]
   } : null;
 
-  // Bangun jenis kelamin dari field summary langsung (bukan per_jk yang tidak ada)
-  const jkData = (statistik?.laki_laki != null && statistik?.perempuan != null) ? {
-    labels: ['Laki-laki', 'Perempuan'],
-    datasets: [{
-      data: [statistik.laki_laki, statistik.perempuan],
-      backgroundColor: ['#3B82F6', '#EC4899'],
-    }]
-  } : null;
+  // FIX: support per_jk (array) ATAU laki_laki/perempuan (flat fields)
+  const jkData = statistik?.per_jk
+    ? {
+        labels: statistik.per_jk.map(j => j.JK === 'L' ? 'Laki-laki' : j.JK === 'P' ? 'Perempuan' : j.JK),
+        datasets: [{ data: statistik.per_jk.map(j => j.jumlah || j.count), backgroundColor: ['#3B82F6', '#EC4899'] }]
+      }
+    : (statistik?.laki_laki != null && statistik?.perempuan != null)
+      ? {
+          labels: ['Laki-laki', 'Perempuan'],
+          datasets: [{ data: [statistik.laki_laki, statistik.perempuan], backgroundColor: ['#3B82F6', '#EC4899'] }]
+        }
+      : null;
 
-  // FIX 3: per_pkrjaan (bukan per_pekerjaan)
-  const pkrjaanData = statistik?.per_pkrjaan ? {
-    labels: statistik.per_pkrjaan.slice(0, 8).map(p => p.label),
+  // FIX: per_pkrjaan (bukan per_pekerjaan)
+  const pkrjaanData = (statistik?.per_pkrjaan || statistik?.per_pekerjaan) ? {
+    labels: (statistik.per_pkrjaan || statistik.per_pekerjaan).slice(0, 8).map(p => p.label || p.PKRJAAN),
     datasets: [{
       label: 'Penduduk',
-      data: statistik.per_pkrjaan.slice(0, 8).map(p => p.jumlah),
+      data: (statistik.per_pkrjaan || statistik.per_pekerjaan).slice(0, 8).map(p => p.jumlah || p.count),
       backgroundColor: '#14B8A6',
       borderRadius: 6,
     }]
   } : null;
 
-  // FIX 3: Backend return log_surat_terbaru (bukan log_terbaru)
-  const logs = dashboard?.log_surat_terbaru || dashboard?.log_terbaru || [];
+  // FIX: Backend return log_surat_terbaru — fallback ke beberapa kemungkinan key
+  const logs = dashboard?.log_surat_terbaru || dashboard?.log_terbaru || dashboard?.recent_logs || [];
 
-  // FIX 3: "Log Hari Ini" → pakai panjang array surat_hari_ini
+  // Hitung aktivitas hari ini
   const logHariIni = Array.isArray(dashboard?.surat_hari_ini)
     ? dashboard.surat_hari_ini.reduce((acc, s) => acc + (s.jumlah || 0), 0)
-    : logs.length;
+    : (dashboard?.log_hari_ini ?? logs.length);
 
   return (
     <div>
@@ -112,6 +116,7 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* Pekerjaan Bar Chart */}
         <div className="card lg:col-span-2">
           <h3 className="font-semibold text-slate-800 mb-4 text-sm">Penduduk per Pekerjaan</h3>
           {pkrjaanData ? (
@@ -123,6 +128,7 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Per Agama Doughnut */}
         <div className="card">
           <h3 className="font-semibold text-slate-800 mb-4 text-sm">Agama</h3>
           {agamaData ? (
@@ -136,6 +142,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Jenis Kelamin */}
         <div className="card">
           <h3 className="font-semibold text-slate-800 mb-4 text-sm">Jenis Kelamin</h3>
           {jkData ? (
@@ -147,6 +154,7 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Log Aktivitas Terbaru */}
         <div className="card lg:col-span-2">
           <h3 className="font-semibold text-slate-800 mb-4 text-sm">Log Aktivitas Terbaru</h3>
           {logs.length > 0 ? (
@@ -160,8 +168,12 @@ export default function Dashboard() {
                     'bg-slate-100 text-slate-600'
                   }`}>{log.method || 'GET'}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-700 font-mono truncate">{log.path || log.endpoint || log.jenis || log.action || '-'}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{log.created_at ? new Date(log.created_at).toLocaleString('id') : '-'}</p>
+                    <p className="text-sm text-slate-700 font-mono truncate">
+                      {log.path || log.endpoint || log.jenis || log.action || '-'}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {log.created_at ? new Date(log.created_at).toLocaleString('id') : '-'}
+                    </p>
                   </div>
                 </div>
               ))}
